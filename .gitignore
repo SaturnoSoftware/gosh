@@ -1,3 +1,5 @@
 build.win32/
 .vs/
 .vscode/
+__BUILD/
+__DIST/

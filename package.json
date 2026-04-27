@@ -1,0 +1,7 @@
+{
+  "name": "gosh",
+  "version": "5.0.0",
+  "build": 0,
+  "description": "Cross-shell directory bookmark utility powered by Python with Bash and PowerShell wrappers.",
+  "license": "GPL-3.0-or-later"
+}

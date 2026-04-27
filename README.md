@@ -73,6 +73,29 @@ cd gosh
 ./install.ps1 ## if you are in powershell
 ```
 
+## Build And Package
+
+`gosh` is being aligned to the Saturno.Software shared build contract.
+
+Current repo-level entrypoints:
+
+```powershell
+pwsh -File Scripts/build.ps1 -ProjectRoot .
+pwsh -File Scripts/package.ps1 -ProjectRoot . -BuildNumber 0
+```
+
+Shared Saturno target flow:
+
+```text
+spb build
+spb package
+```
+
+Build outputs are standardized under:
+
+- `__BUILD/<release-name>/`
+- `__DIST/<release-name>/`
+
 ---
 
 ## Dependencies:
