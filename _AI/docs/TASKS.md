@@ -81,5 +81,5 @@
 | T-004 | Add the first automated tests | AI owns | Done | `unittest` CLI coverage for help, add/print, and delete flows |
 | T-005 | Add CI workflow | AI owns | Done | GitHub Actions now runs tests plus the `spb` build/package contract |
 | T-006 | Clarify release artifact strategy | Shared | Open | Install-script only versus clearer packaged flow |
-| T-007 | Define benchmark posture | Shared | Open | Small CLI benchmark expectations |
+| T-007 | Define benchmark posture | Shared | Done | Small CLI benchmark expectations now documented in `TESTING.md` |
 | T-008 | Expand CLI regression coverage | AI owns | Open | Cover invalid paths, fuzzy lookup, update flow, and wrapper behavior |

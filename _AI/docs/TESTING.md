@@ -32,3 +32,25 @@
 - fuzzy-name lookup behavior
 - update flow
 - wrapper behavior in Bash and PowerShell
+
+## Benchmark Posture
+
+`gosh` is a small CLI, so its benchmark posture should stay narrow and practical.
+
+What matters:
+
+- startup overhead of the Python CLI for common commands
+- latency of common bookmark operations on a modest bookmark file
+- avoiding accidental regressions from future refactors
+
+What does not matter yet:
+
+- synthetic micro-benchmarks that do not reflect real CLI usage
+- dashboarding or historical benchmark infrastructure before the repo has a wider
+  automated surface
+
+First meaningful future benchmark targets:
+
+1. `--list` on a representative bookmark file
+2. `--print <name>` on a representative bookmark file
+3. `--add <name> <path>` on a representative bookmark file
