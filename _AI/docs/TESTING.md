@@ -3,6 +3,7 @@
 ## Current Reality
 
 - committed automated tests now exist in `tests/test_gosh_cli.py`
+- committed release/install contract tests now exist in `tests/test_gosh_release_layout.py`
 - the first test surface is black-box subprocess testing against `gosh/gosh2.py`
 - tests isolate bookmark storage by overriding `HOME` per test process
 
@@ -25,13 +26,17 @@
 - print bookmark flow
 - bookmark count increment on successful print
 - delete bookmark flow
+- package-ready `App/` layout in `__BUILD/<release-name>/`
+- package-ready release layout preserved in `__DIST/<release-name>/`
+- packaged PowerShell install flow
+- packaged Bash install flow on Unix-like environments
 
 ## Next Coverage Targets
 
 - invalid path handling
 - fuzzy-name lookup behavior
 - update flow
-- wrapper behavior in Bash and PowerShell
+- wrapper directory-mutation behavior in Bash and PowerShell
 
 ## Benchmark Posture
 

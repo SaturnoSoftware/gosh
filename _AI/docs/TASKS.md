@@ -2,6 +2,27 @@
 
 ## Current Task
 
+### T-010: Modernize the install/build/release structure
+
+- Mode: AI owns
+- Owner: Assistant
+- Status: Done
+- Goal: keep the install-script UX while giving `gosh` a clearer packaged release
+  layout that no longer depends only on the loose legacy repo tree.
+- Why now: `gosh` already had the minimum `spb` build/package entrypoints, but the
+  release payload shape was still implicit and too close to the old copy-based layout.
+- Scope:
+  - stage an explicit `App/` payload during build/package
+  - make `install.sh` and `install.ps1` consume the packaged layout
+  - add regression coverage for build/package layout and packaged install flow
+- Verification:
+  - `python3 -m unittest discover -s tests -v`
+  - `pwsh -File Scripts/build.ps1 -ProjectRoot . -BuildNumber 0`
+  - `pwsh -File Scripts/package.ps1 -ProjectRoot . -BuildNumber 0`
+- Result:
+  - `gosh` now ships a clearer package-ready release root while preserving the existing
+    install-script UX
+
 ### T-009: Normalize repo docs after the first tests/CI/benchmark slices
 
 - Mode: AI owns
@@ -101,6 +122,8 @@
 | T-003 | Define the first automated test strategy | Shared | Done | Black-box subprocess tests around `gosh2.py` with isolated `HOME` |
 | T-004 | Add the first automated tests | AI owns | Done | `unittest` CLI coverage for help, add/print, and delete flows |
 | T-005 | Add CI workflow | AI owns | Done | GitHub Actions now runs tests plus the `spb` build/package contract |
-| T-006 | Clarify release artifact strategy | Shared | Open | Install-script only versus clearer packaged flow |
+| T-006 | Clarify release artifact strategy | Shared | Done | Hybrid decision: packaged `App/` payload with install scripts as the user-facing flow |
 | T-007 | Define benchmark posture | Shared | Done | Small CLI benchmark expectations now documented in `TESTING.md` |
 | T-008 | Expand CLI regression coverage | AI owns | Open | Cover invalid paths, fuzzy lookup, update flow, and wrapper behavior |
+| T-010 | Modernize install/build/release structure | AI owns | Done | `App/` payload now stages in `__BUILD/` and `__DIST/`, and install scripts consume it |
+| T-011 | Define code-style and script-quality posture | Shared | Open | Make Bash/PowerShell/Python quality rules explicit and enforceable |

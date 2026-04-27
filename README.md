@@ -73,6 +73,9 @@ cd gosh
 ./install.ps1 ## if you are in powershell
 ```
 
+The same install scripts also work from a packaged release root under
+`__DIST/<release-name>/`.
+
 ## Build And Package
 
 `gosh` is being aligned to the Saturno.Software shared build contract.
@@ -95,6 +98,24 @@ Build outputs are standardized under:
 
 - `__BUILD/<release-name>/`
 - `__DIST/<release-name>/`
+
+The packaged release layout is now explicit:
+
+```text
+__DIST/<release-name>/
+  App/
+    gosh2.py
+    gosh.sh
+    gosh.ps1
+  install.sh
+  install.ps1
+  package.json
+  README.md
+  ...
+```
+
+That keeps the install scripts as the user-facing flow while giving the repo a clearer
+package-ready release artifact.
 
 ---
 

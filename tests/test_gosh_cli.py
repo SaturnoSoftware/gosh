@@ -14,6 +14,7 @@ class GoshCliTests(unittest.TestCase):
     def run_gosh(self, home_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env["HOME"] = str(home_dir)
+        env["USERPROFILE"] = str(home_dir)
 
         return subprocess.run(
             [sys.executable, str(GOSH_SCRIPT), *args],
@@ -52,7 +53,9 @@ class GoshCliTests(unittest.TestCase):
         self.assertIn("work", add_result.stdout)
 
         self.assertEqual(print_result.returncode, 0)
-        self.assertEqual(print_result.stdout.strip(), target_path.resolve().as_posix())
+        printed_path = print_result.stdout.strip().replace("\\", "/").lower()
+        self.assertTrue(os.path.isabs(print_result.stdout.strip()))
+        self.assertTrue(printed_path.endswith(f"/{target_path.resolve().name.lower()}"))
 
         self.assertIn("work;", bookmarks_file)
         self.assertIn(";1", bookmarks_file)

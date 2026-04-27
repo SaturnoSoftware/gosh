@@ -9,9 +9,17 @@ HOME_DIR="${HOME:-$USERPROFILE}";
 
 PROGRAM_NAME="gosh";
 DIRECTORY_NAME="${PROGRAM_NAME}_";
-PROGRAM_SOURCE_PATH="${SCRIPT_DIR}/${PROGRAM_NAME}";
 PROGRAM_INSTALL_ROOT_PATH="${HOME_DIR}/.mateusdigital/bin";
 PROGRAM_INSTALL_SUB_PATH="${PROGRAM_INSTALL_ROOT_PATH}/${DIRECTORY_NAME}";
+
+if [ -d "${SCRIPT_DIR}/App" ]; then
+    PROGRAM_SOURCE_PATH="${SCRIPT_DIR}/App";
+elif [ -d "${SCRIPT_DIR}/${PROGRAM_NAME}" ]; then
+    PROGRAM_SOURCE_PATH="${SCRIPT_DIR}/${PROGRAM_NAME}";
+else
+    echo "[gosh] Missing packaged App/ or legacy gosh/ source directory.";
+    exit 1;
+fi
 
 ##----------------------------------------------------------------------------##
 ## Script                                                                     ##

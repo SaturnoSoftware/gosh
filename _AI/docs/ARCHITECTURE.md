@@ -18,6 +18,8 @@
   - `Scripts/build.ps1`
   - `Scripts/package.ps1`
 - Deployment target: user shell environment after installation
+- Release payload shape: package-ready `App/` directory plus root install scripts inside
+  `__BUILD/<release-name>/` and `__DIST/<release-name>/`
 - Persistence/storage: bookmarks file under `~/.mateusdigital/config/gosh/gosh-paths.txt`
 - Logging/debug posture: plain console output only
 - Test runner: Python `unittest`
@@ -41,9 +43,10 @@
 | `gosh/gosh2.py` | Core bookmark logic and CLI parsing | Python runtime center |
 | `gosh/gosh.sh` | Bash wrapper | Changes shell directory on success |
 | `gosh/gosh.ps1` | PowerShell wrapper | Changes shell directory on success |
-| `install.sh` | Bash install path | Copies wrappers/runtime into `~/.mateusdigital/bin` |
-| `install.ps1` | PowerShell install path | Copies wrappers/runtime into `~/.mateusdigital/bin` |
-| `Scripts/build.ps1` | Saturno build entrypoint | Produces canonical `__BUILD/` output |
-| `Scripts/package.ps1` | Saturno package entrypoint | Produces canonical `__DIST/` output |
+| `install.sh` | Bash install path | Installs from packaged `App/` payload or the legacy repo layout |
+| `install.ps1` | PowerShell install path | Installs from packaged `App/` payload or the legacy repo layout |
+| `Scripts/build.ps1` | Saturno build entrypoint | Stages a package-ready `App/` payload under `__BUILD/` |
+| `Scripts/package.ps1` | Saturno package entrypoint | Preserves the package-ready release layout under `__DIST/` |
 | `tests/test_gosh_cli.py` | First committed regression surface | Black-box subprocess CLI coverage |
+| `tests/test_gosh_release_layout.py` | Release/install contract regression surface | Verifies build/package layout and packaged install flow |
 | `.github/workflows/test.yml` | Current CI workflow | Runs tests plus Saturno build/package verification |

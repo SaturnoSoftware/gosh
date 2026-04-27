@@ -28,12 +28,23 @@
 $SCRIPT_FULLPATH = $MyInvocation.MyCommand.Path;
 $SCRIPT_DIR      = Split-Path "$SCRIPT_FULLPATH" -Parent;
 $HOME_DIR        = if($HOME -eq "") { "$env:USERPROFILE" } else { $HOME };
+$APP_SOURCE_PATH = Join-Path $SCRIPT_DIR "App";
+$LEGACY_SOURCE_PATH = Join-Path $SCRIPT_DIR "gosh";
 ## Program
 $PROGRAM_NAME              = "gosh";
 $DIRECTORY_NAME            = "${PROGRAM_NAME}_";
-$PROGRAM_SOURCE_PATH       = "${SCRIPT_DIR}/${PROGRAM_NAME}";
 $PROGRAM_INSTALL_ROOT_PATH = "${HOME_DIR}/.mateusdigital/bin";
 $PROGRAM_INSTALL_SUB_PATH  = "${PROGRAM_INSTALL_ROOT_PATH}/${DIRECTORY_NAME}";
+
+if (Test-Path -LiteralPath $APP_SOURCE_PATH -PathType Container) {
+    $PROGRAM_SOURCE_PATH = $APP_SOURCE_PATH;
+}
+elseif (Test-Path -LiteralPath $LEGACY_SOURCE_PATH -PathType Container) {
+    $PROGRAM_SOURCE_PATH = $LEGACY_SOURCE_PATH;
+}
+else {
+    throw "[gosh] Missing packaged App/ or legacy gosh/ source directory."
+}
 
 
 ##----------------------------------------------------------------------------##
@@ -50,10 +61,10 @@ if (-not (Test-Path -LiteralPath $PROGRAM_INSTALL_SUB_PATH)) {
 }
 
 ## Copy the file to the install dir...
-Copy-Item -Force $PROGRAM_SOURCE_PATH/gosh2.py `
-                 $PROGRAM_INSTALL_SUB_PATH/gosh2.py
-Copy-Item -Force $PROGRAM_SOURCE_PATH/gosh.ps1 `
-                 $PROGRAM_INSTALL_ROOT_PATH/gosh.ps1;
+Copy-Item -Force (Join-Path $PROGRAM_SOURCE_PATH "gosh2.py") `
+                 (Join-Path $PROGRAM_INSTALL_SUB_PATH "gosh2.py")
+Copy-Item -Force (Join-Path $PROGRAM_SOURCE_PATH "gosh.ps1") `
+                 (Join-Path $PROGRAM_INSTALL_ROOT_PATH "gosh.ps1");
 
 
 Write-Output "$PROGRAM_NAME was installed at:";

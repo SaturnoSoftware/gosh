@@ -35,11 +35,13 @@ function Copy-IfPresent {
 $PackageJson = Get-GoshPackageJson -RootPath $ProjectRoot
 $ReleaseName = "$($PackageJson.name)-$($PackageJson.version)-$BuildNumber"
 $BuildOutputDir = Join-Path (Join-Path $ProjectRoot "__BUILD") $ReleaseName
+$AppOutputDir = Join-Path $BuildOutputDir "App"
 
 Write-Host "==> Building: $ReleaseName"
 Write-Host "==> Output directory: $BuildOutputDir"
 
 Clear-AndEnsureDirectory -Path $BuildOutputDir
+New-Item -ItemType Directory -Force -Path $AppOutputDir | Out-Null
 
 $FilesToCopy = @(
     "README.md",
@@ -54,7 +56,13 @@ foreach ($File in $FilesToCopy) {
     Copy-IfPresent -SourcePath (Join-Path $ProjectRoot $File) -DestinationPath $BuildOutputDir
 }
 
-Copy-IfPresent -SourcePath (Join-Path $ProjectRoot "gosh") -DestinationPath (Join-Path $BuildOutputDir "gosh")
+@(
+    "gosh2.py",
+    "gosh.sh",
+    "gosh.ps1"
+) | ForEach-Object {
+    Copy-Item -LiteralPath (Join-Path (Join-Path $ProjectRoot "gosh") $_) -Destination (Join-Path $AppOutputDir $_) -Force
+}
 
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "package.json") -Destination (Join-Path $BuildOutputDir "package.json") -Force
 

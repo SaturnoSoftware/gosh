@@ -4,7 +4,7 @@
 
 - Release status: migration-defined release posture
 - Target audience: shell users and developers
-- Distribution channel(s): GitHub repo clone and local install scripts
+- Distribution channel(s): GitHub repo clone and packaged `__DIST/<release-name>/` roots
 - Install/update path:
   - `install.sh`
   - `install.ps1`
@@ -18,15 +18,21 @@
 - the repo now has documented `spb`-compatible build/package entrypoints:
   - `pwsh -File Scripts/build.ps1 -ProjectRoot . -BuildNumber 0`
   - `pwsh -File Scripts/package.ps1 -ProjectRoot . -BuildNumber 0`
-- current package outputs land under:
-  - `__BUILD/<release-name>/`
-  - `__DIST/<release-name>/`
+- current package outputs land under `__BUILD/<release-name>/` and
+  `__DIST/<release-name>/`
+- the packaged release artifact shape is now explicit:
+  - `App/gosh2.py`
+  - `App/gosh.sh`
+  - `App/gosh.ps1`
+  - `install.sh`
+  - `install.ps1`
+  - `package.json`
 - the repo still has no approved deploy / set-current / release entrypoint
-- install scripts remain the practical user-facing release path today
+- install scripts remain the practical user-facing release path today, but they now
+  consume the packaged layout instead of depending only on the loose repo tree
 
 ## Open Release Gaps
 
-- define the real release artifact shape
-- define whether releases remain install-script driven or move to a clearer packaged
-  flow
-- document the actual release verification path
+- define the future tagged/released distribution story around the current packaged layout
+- define whether the repo needs a formal release job or remains manually cut for now
+- document the eventual release verification path beyond local build/package/install
