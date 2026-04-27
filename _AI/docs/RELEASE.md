@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Release status: legacy/manual release posture
+- Release status: migration-defined release posture
 - Target audience: shell users and developers
 - Distribution channel(s): GitHub repo clone and local install scripts
 - Install/update path:
@@ -15,9 +15,14 @@
 ## Current Reality
 
 - there is no standardized CI release flow yet
-- there is no documented packaged release process beyond the install scripts
-- the repo now has `spb`-compatible build/package entrypoints, but not a full release
-  pipeline
+- the repo now has documented `spb`-compatible build/package entrypoints:
+  - `pwsh -File Scripts/build.ps1 -ProjectRoot . -BuildNumber 0`
+  - `pwsh -File Scripts/package.ps1 -ProjectRoot . -BuildNumber 0`
+- current package outputs land under:
+  - `__BUILD/<release-name>/`
+  - `__DIST/<release-name>/`
+- the repo still has no approved deploy / set-current / release entrypoint
+- install scripts remain the practical user-facing release path today
 
 ## Open Release Gaps
 

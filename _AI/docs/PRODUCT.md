@@ -22,8 +22,9 @@
   noisy in shell workflows.
 - Why this matters now: the product already exists, but it sits outside the Saturno
   build/test/release standard and needs modernization.
-- What is painful today: no durable repo docs, no tests, no CI, and no shared
-  Saturno build/package contract until the recent `spb` starter slice.
+- What is painful today: install/release behavior is still legacy-shaped, wrapper-focused
+  regression coverage is still shallow, and the repo still needs a clearer enforceable
+  quality posture.
 - Why existing alternatives are not enough: shell aliases and ad-hoc scripts do not
   provide the same bookmark-oriented workflow or cross-shell wrapper behavior.
 
@@ -50,4 +51,3 @@
 - What would make this fail even if technically finished:
   - modernization adds complexity without improving reliability
   - the repo remains undocumented or untested
-

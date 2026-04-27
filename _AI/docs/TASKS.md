@@ -2,6 +2,27 @@
 
 ## Current Task
 
+### T-009: Normalize repo docs after the first tests/CI/benchmark slices
+
+- Mode: AI owns
+- Owner: Assistant
+- Status: Done
+- Goal: make the repo-local product/release/architecture memory match the already-landed
+  `spb`, tests, CI, and benchmark posture.
+- Why now: the repo state improved in several slices, but parts of the durable `_AI`
+  memory still described the older pre-test and pre-CI reality.
+- Scope:
+  - sync `PRODUCT.md`
+  - sync `RELEASE.md`
+  - sync `ARCHITECTURE.md`
+  - record the current `spb` adoption status in repo-local task memory
+- Verification:
+  - reviewed repo-local docs against `README.md`, `.github/workflows/test.yml`,
+    `Scripts/build.ps1`, `Scripts/package.ps1`, and `tests/test_gosh_cli.py`
+- Result:
+  - repo-local docs now describe the real committed tests, CI, and `spb` build/package
+    entrypoints instead of the earlier legacy-only state
+
 ### T-005: Add the first CI workflow
 
 - Mode: AI owns

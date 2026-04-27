@@ -20,8 +20,8 @@
 - Deployment target: user shell environment after installation
 - Persistence/storage: bookmarks file under `~/.mateusdigital/config/gosh/gosh-paths.txt`
 - Logging/debug posture: plain console output only
-- Test runner: none yet
-- CI/CD platform: none yet
+- Test runner: Python `unittest`
+- CI/CD platform: GitHub Actions (`.github/workflows/test.yml`)
 
 ## Purpose
 
@@ -45,4 +45,5 @@
 | `install.ps1` | PowerShell install path | Copies wrappers/runtime into `~/.mateusdigital/bin` |
 | `Scripts/build.ps1` | Saturno build entrypoint | Produces canonical `__BUILD/` output |
 | `Scripts/package.ps1` | Saturno package entrypoint | Produces canonical `__DIST/` output |
-
+| `tests/test_gosh_cli.py` | First committed regression surface | Black-box subprocess CLI coverage |
+| `.github/workflows/test.yml` | Current CI workflow | Runs tests plus Saturno build/package verification |
