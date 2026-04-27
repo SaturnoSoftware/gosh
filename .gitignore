@@ -3,3 +3,5 @@ build.win32/
 .vscode/
 __BUILD/
 __DIST/
+__pycache__/
+*.pyc

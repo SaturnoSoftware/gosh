@@ -16,10 +16,11 @@
 
 ### Q-002: What is the smallest valuable automated test surface?
 
-- Status: Open
+- Status: Resolved
 - Question: should the first tests target Python core behavior only, or also wrapper
   integration?
 - Why it matters: this decides the first real verification path.
-- Assumption: start with the Python core and add wrapper-focused tests after that.
-- Answer:
-- Follow-up:
+- Assumption:
+- Answer: start with black-box subprocess tests around `gosh/gosh2.py`, isolating
+  bookmark storage through per-test `HOME`; add wrapper-focused tests later.
+- Follow-up: expand coverage to wrapper behavior and error-path flows.

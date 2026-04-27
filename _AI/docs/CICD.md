@@ -2,15 +2,14 @@
 
 ## Current Reality
 
-- there is no committed CI workflow in this repo today
-- there are no required checks
-- there is no automated release verification path
+- committed workflow: `.github/workflows/test.yml`
+- CI now runs:
+  - `python3 -m unittest discover -s tests -v`
+  - `pwsh -File ./Scripts/build.ps1 -ProjectRoot $PWD -BuildNumber 0`
+  - `pwsh -File ./Scripts/package.ps1 -ProjectRoot $PWD -BuildNumber 0`
 
-## Immediate Goal
+## Current Gaps
 
-- add one CI workflow that runs the real first test/verification path once it exists
-
-## Current Blocker
-
-- the repo does not yet have automated tests to run in CI
-
+- no benchmark job yet
+- no wrapper-shell integration checks yet
+- no release job yet
