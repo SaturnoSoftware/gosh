@@ -2,8 +2,8 @@
 
 This directory is the durable AI and human working set for `gosh`.
 
-`gosh` is now being brought into the Saturno.Software repo standard.
-These docs should stay short, factual, and aligned with the live repo.
+`gosh` now has the baseline Saturno wrapper, test, and CI posture in place.
+These docs should stay short, factual, and aligned with the live repo and master policy.
 
 ## Read Order
 
@@ -32,7 +32,25 @@ These docs should stay short, factual, and aligned with the live repo.
 
 ## Current Biggest Gaps
 
-- no automated tests
-- no committed CI workflow
-- no durable release/process docs existed before this `_AI` pack
-- still not fully aligned with the broader Saturno standard
+- no benchmark job yet
+- no wrapper-shell integration checks in CI yet
+- no release automation yet
+- repo-local `_AI/` must stay synced with `_AI_MASTER/` when Saturno-wide policy changes
+
+## Saturno Alignment
+
+- The local source of truth for `gosh` is this `_AI/` folder and the live repo.
+- When work touches Saturno-wide policy, `_AI` structure, `spb`, shared tooling, or
+  cross-repo quality rules, also read `_AI_MASTER/README.md` and the relevant
+  `_AI_MASTER/docs/*` files from the Saturno master checkout.
+- `_AI_DEFAULT` is the reusable structure source, not the active truth for this repo.
+
+## Sync Workflow
+
+1. Start with the local `_AI/` docs for the concrete `gosh` reality.
+2. Check `_AI_MASTER/` before changing Saturno-wide process, wrapper expectations, or
+   reusable cross-repo behavior.
+3. If local repo evidence invalidates a master assumption, update `_AI_MASTER/` in the same
+   slice.
+4. Keep this README and the current docs aligned with the committed tests, CI, and release
+   shape.
