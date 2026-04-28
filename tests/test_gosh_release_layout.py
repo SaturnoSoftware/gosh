@@ -13,8 +13,10 @@ BUILD_NUMBER = 41
 RELEASE_NAME = f"{PACKAGE_JSON['name']}-{PACKAGE_JSON['version']}-{BUILD_NUMBER}"
 BUILD_DIR = REPO_ROOT / "__BUILD" / RELEASE_NAME
 DIST_DIR = REPO_ROOT / "__DIST" / RELEASE_NAME
+PWSH = shutil.which("pwsh")
 
 
+@unittest.skipUnless(PWSH, "pwsh is required for release-layout tests")
 class GoshReleaseLayoutTests(unittest.TestCase):
     def tearDown(self) -> None:
         shutil.rmtree(BUILD_DIR, ignore_errors=True)
@@ -22,7 +24,7 @@ class GoshReleaseLayoutTests(unittest.TestCase):
 
     def run_pwsh(self, script_path: Path, working_directory: Path | None = None, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         command = [
-            "pwsh",
+            PWSH,
             "-NoLogo",
             "-NoProfile",
             "-File",
@@ -81,7 +83,7 @@ class GoshReleaseLayoutTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    "pwsh",
+                    PWSH,
                     "-NoLogo",
                     "-NoProfile",
                     "-File",

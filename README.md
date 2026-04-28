@@ -39,6 +39,7 @@ Usage:
   gosh -p <name>         (Show path for bookmark)
   gosh -e <path>         (Show bookmark for path)
   gosh -a <name> <path>  (Add bookmark)
+  gosh -u <name> <path>  (Update bookmark path)
   gosh -d <name>         (Delete the bookmark)
 
 Options:
@@ -52,7 +53,8 @@ Options:
   *-L --list-long  : Show all Bookmarks and Paths.
 
   *-a --add    <name> <path>  : Add a Bookmark with specified path.
-  *-r --delete <name>         : Delete a Bookmark.
+  *-u --update <name> <path>  : Update the path for a Bookmark.
+  *-d --delete <name>         : Delete a Bookmark.
 
 Notes:
   If <path> is blank the current directory is assumed.

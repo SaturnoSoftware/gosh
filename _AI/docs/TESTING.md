@@ -26,17 +26,20 @@
 - print bookmark flow
 - bookmark count increment on successful print
 - delete bookmark flow
+- invalid path rejection
+- fuzzy-name lookup
+- update flow
 - package-ready `App/` layout in `__BUILD/<release-name>/`
 - package-ready release layout preserved in `__DIST/<release-name>/`
 - packaged PowerShell install flow
 - packaged Bash install flow on Unix-like environments
+- wrapper directory mutation in PowerShell and Bash where those shells are available
 
 ## Next Coverage Targets
 
-- invalid path handling
-- fuzzy-name lookup behavior
-- update flow
-- wrapper directory-mutation behavior in Bash and PowerShell
+- version and help output consistency
+- edge cases around malformed bookmark file lines
+- conflict resolution when multiple bookmark names fuzzy-match similarly
 
 ## Benchmark Posture
 

@@ -25,7 +25,12 @@ function gosh() {
     ## Constants
     local SCRIPT_FULLPATH="${BASH_SOURCE}";
     local SCRIPT_DIR="$(dirname "$SCRIPT_FULLPATH")";
-    local GOSH_EXE="${SCRIPT_DIR}/gosh_/gosh2.py";
+    local GOSH_EXE="${SCRIPT_DIR}/gosh2.py";
+    local PYTHON_EXE="python3";
+
+    if ! command -v "$PYTHON_EXE" >/dev/null 2>&1; then
+        PYTHON_EXE="python";
+    fi;
 
     if [ ! -f "$GOSH_EXE" ]; then
         echo "[gosh] Missing ($GOSH_EXE)";
@@ -34,7 +39,7 @@ function gosh() {
 
     ## No args, just list the bookmarks.
     if [ $# -eq 0 ]; then
-        python3 $GOSH_EXE --help;
+        $PYTHON_EXE $GOSH_EXE --help;
         return 0;
     fi;
 
@@ -46,13 +51,13 @@ function gosh() {
     ## poweshell to cd to that dir ;D
     for item in "$@"; do
         if [ "${item:0:2}" == "--" ] || [ "${item:0:1}" == "-" ]; then
-            python3 $GOSH_EXE $@;
+            $PYTHON_EXE $GOSH_EXE $@;
             return;
         fi;
     done;
 
     ## Changing directory...
-    local target_path=$(python3 $GOSH_EXE $@);
+    local target_path=$($PYTHON_EXE $GOSH_EXE $@);
     if [ -d "$target_path" ]; then
         cd $target_path || exit 1;
         echo "[gosh] ${PWD}";

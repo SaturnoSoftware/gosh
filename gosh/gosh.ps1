@@ -25,7 +25,7 @@
 ##----------------------------------------------------------------------------##
 $SCRIPT_FULLPATH = $MyInvocation.MyCommand.Path;
 $SCRIPT_DIR      = (Split-Path "$SCRIPT_FULLPATH" -Parent);
-$GOSH_EXE        = "$SCRIPT_DIR/gosh_/gosh2.py";
+$GOSH_EXE        = (Join-Path $SCRIPT_DIR "gosh2.py");
 $PYTHON_EXE      = "python";
 
 if($IsMacOS) {

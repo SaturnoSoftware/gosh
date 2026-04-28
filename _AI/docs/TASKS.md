@@ -2,6 +2,45 @@
 
 ## Current Task
 
+### T-011: Define code-style and script-quality posture
+
+- Mode: Shared
+- Owner: Assistant
+- Status: Done
+- Goal: make the repo's Python/Bash/PowerShell quality rules explicit enough that future
+  changes do not weaken the small-CLI contract.
+- Why now: the repo now has real tests, wrappers, and a packaged release layout, so the
+  next risk is silent drift in script behavior rather than missing infrastructure.
+- Scope:
+  - strengthen `CODESTYLE.md`
+  - tie code-style expectations to the committed verification path
+  - make wrapper/session behavior part of the explicit quality posture
+- Verification:
+  - reviewed `CODESTYLE.md` against `gosh/gosh2.py`, `gosh/gosh.sh`, `gosh/gosh.ps1`,
+    and the current test/build/package commands
+- Result:
+  - the repo now has explicit quality gates for CLI changes, wrapper changes, and
+    packaged install-flow changes
+
+### T-008: Expand CLI regression coverage
+
+- Mode: AI owns
+- Owner: Assistant
+- Status: Done
+- Goal: cover the next real regression-prone CLI behaviors beyond help/add/delete.
+- Why now: the repo already had its first tests and package layout checks, but key user
+  behavior still had no automated protection.
+- Scope:
+  - cover invalid path handling
+  - cover fuzzy-name lookup
+  - implement and cover the missing update flow
+  - cover wrapper directory mutation in PowerShell and Bash
+- Verification:
+  - `python3 -m unittest discover -s tests -v`
+- Result:
+  - CLI regression coverage now protects invalid-path failure, fuzzy lookup, update, and
+    wrapper directory-mutation behavior
+
 ### T-010: Modernize the install/build/release structure
 
 - Mode: AI owns
@@ -124,6 +163,6 @@
 | T-005 | Add CI workflow | AI owns | Done | GitHub Actions now runs tests plus the `spb` build/package contract |
 | T-006 | Clarify release artifact strategy | Shared | Done | Hybrid decision: packaged `App/` payload with install scripts as the user-facing flow |
 | T-007 | Define benchmark posture | Shared | Done | Small CLI benchmark expectations now documented in `TESTING.md` |
-| T-008 | Expand CLI regression coverage | AI owns | Open | Cover invalid paths, fuzzy lookup, update flow, and wrapper behavior |
+| T-008 | Expand CLI regression coverage | AI owns | Done | Covers invalid paths, fuzzy lookup, update flow, and wrapper directory mutation |
 | T-010 | Modernize install/build/release structure | AI owns | Done | `App/` payload now stages in `__BUILD/` and `__DIST/`, and install scripts consume it |
-| T-011 | Define code-style and script-quality posture | Shared | Open | Make Bash/PowerShell/Python quality rules explicit and enforceable |
+| T-011 | Define code-style and script-quality posture | Shared | Done | `CODESTYLE.md` now ties Python/Bash/PowerShell changes to explicit quality gates and verification commands |

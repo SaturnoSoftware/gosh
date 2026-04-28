@@ -1,4 +1,6 @@
 import os
+import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -8,6 +10,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GOSH_SCRIPT = REPO_ROOT / "gosh" / "gosh2.py"
+GOSH_BASH_WRAPPER = REPO_ROOT / "gosh" / "gosh.sh"
+GOSH_POWERSHELL_WRAPPER = REPO_ROOT / "gosh" / "gosh.ps1"
 
 
 class GoshCliTests(unittest.TestCase):
@@ -30,6 +34,38 @@ class GoshCliTests(unittest.TestCase):
         if not bookmarks_path.exists():
             return ""
         return bookmarks_path.read_text(encoding="utf-8")
+
+    def run_powershell_wrapper(self, home_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
+        env = os.environ.copy()
+        env["HOME"] = str(home_dir)
+        env["USERPROFILE"] = str(home_dir)
+
+        quoted_args = " ".join("'" + arg.replace("'", "''") + "'" for arg in args)
+        command = f"& '{GOSH_POWERSHELL_WRAPPER}' {quoted_args}; (Get-Location).Path"
+
+        return subprocess.run(
+            ["pwsh", "-NoProfile", "-Command", command],
+            cwd=REPO_ROOT,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    def run_bash_wrapper(self, home_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
+        env = os.environ.copy()
+        env["HOME"] = str(home_dir)
+        command_args = " ".join(shlex.quote(arg) for arg in args)
+        command = f". ./gosh/gosh.sh && gosh {command_args} && pwd"
+
+        return subprocess.run(
+            ["bash", "-lc", command],
+            cwd=REPO_ROOT,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
 
     def test_help_prints_usage(self) -> None:
         with tempfile.TemporaryDirectory() as temp_home:
@@ -73,6 +109,75 @@ class GoshCliTests(unittest.TestCase):
         self.assertIn("Bookmark deleted:", delete_result.stdout)
         self.assertIn("(trash)", delete_result.stdout)
         self.assertIn("No bookmarks yet", list_result.stdout)
+
+    def test_add_rejects_invalid_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home:
+            home_path = Path(temp_home)
+            invalid_path = home_path / "missing-dir"
+
+            add_result = self.run_gosh(home_path, "--add", "broken", str(invalid_path))
+            bookmarks_file = self.read_bookmarks_file(home_path)
+
+        self.assertEqual(add_result.returncode, 1)
+        self.assertIn("[FATAL] Path (", add_result.stdout)
+        self.assertIn("is not a valid directory", add_result.stdout)
+        self.assertEqual(bookmarks_file, "")
+
+    def test_print_supports_fuzzy_name_lookup(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as target_dir:
+            home_path = Path(temp_home)
+            target_path = Path(target_dir)
+
+            self.run_gosh(home_path, "--add", "workspace", str(target_path))
+            print_result = self.run_gosh(home_path, "--print", "wrkspace")
+
+            self.assertEqual(print_result.returncode, 0)
+            self.assertTrue(os.path.samefile(print_result.stdout.strip(), target_path.resolve()))
+
+    def test_update_changes_bookmark_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as original_dir, tempfile.TemporaryDirectory() as updated_dir:
+            home_path = Path(temp_home)
+            original_path = Path(original_dir)
+            updated_path = Path(updated_dir)
+
+            self.run_gosh(home_path, "--add", "notes", str(original_path))
+            update_result = self.run_gosh(home_path, "--update", "notes", str(updated_path))
+            print_result = self.run_gosh(home_path, "--print", "notes")
+            bookmarks_file = self.read_bookmarks_file(home_path)
+
+            self.assertEqual(update_result.returncode, 0)
+            self.assertIn("Bookmark updated:", update_result.stdout)
+            self.assertTrue(os.path.samefile(print_result.stdout.strip(), updated_path.resolve()))
+            stored_path = bookmarks_file.strip().split(";")[1]
+            self.assertTrue(os.path.samefile(stored_path, updated_path.resolve()))
+
+    @unittest.skipUnless(shutil.which("pwsh"), "PowerShell is required for wrapper tests")
+    def test_powershell_wrapper_changes_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as target_dir:
+            home_path = Path(temp_home)
+            target_path = Path(target_dir)
+
+            self.run_gosh(home_path, "--add", "shell", str(target_path))
+            wrapper_result = self.run_powershell_wrapper(home_path, "shell")
+
+            self.assertEqual(wrapper_result.returncode, 0)
+            self.assertTrue(os.path.samefile(wrapper_result.stdout.strip(), target_path.resolve()))
+
+    @unittest.skipUnless(shutil.which("bash"), "Bash is required for wrapper tests")
+    def test_bash_wrapper_changes_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as target_dir:
+            home_path = Path(temp_home)
+            target_path = Path(target_dir)
+
+            self.run_gosh(home_path, "--add", "shell", str(target_path))
+            wrapper_result = self.run_bash_wrapper(home_path, "shell")
+
+            self.assertEqual(wrapper_result.returncode, 0)
+            output_lines = [line.strip() for line in wrapper_result.stdout.splitlines() if line.strip()]
+            self.assertGreaterEqual(len(output_lines), 1)
+            if output_lines[0].startswith("[gosh] "):
+                self.assertEqual(output_lines[0].replace("[gosh] ", "", 1), output_lines[-1])
+            self.assertTrue(output_lines[-1].replace("\\", "/").lower().endswith(target_path.name.lower()))
 
 
 if __name__ == "__main__":

@@ -95,6 +95,7 @@ def print_help():
   gosh -p <name>         (Show path for bookmark)
   gosh -e <path>         (Show bookmark for path)
   gosh -a <name> <path>  (Add bookmark)
+  gosh -u <name> <path>  (Update bookmark path)
   gosh -d <name>         (Delete the bookmark)
 
 Options:
@@ -108,7 +109,8 @@ Options:
   *-L --list-long  : Show all Bookmarks and Paths.
 
   *-a --add    <name> <path>  : Add a Bookmark with specified path.
-  *-r --delete <name>         : Delete a Bookmark.
+  *-u --update <name> <path>  : Update the path for a Bookmark.
+  *-d --delete <name>         : Delete a Bookmark.
 
   *-E --edit                  : Open default editor to edit the bookmarks file.
 
@@ -290,6 +292,27 @@ elif(args.delete is not None):
     something_was_changed = True;
 
     print("Bookmark deleted:\n  ({0})".format(name));
+
+##
+## Update
+elif(args.update is not None):
+    name       = args.update[0];
+    path       = args.update[1];
+    clean_name = name_for_fuzzy_name(name);
+    clean_path = canonize_path(path);
+
+    ## Check if we actually have a bookmark with this name.
+    if(clean_name not in bookmarks.keys()):
+        print_fatal("Bookmark ({0}) doesn't exists.".format(clean_name));
+
+    ## Check if path is valid path.
+    if(not os.path.isdir(clean_path)):
+        print_fatal("Path ({0}) is not a valid directory.".format(clean_path));
+
+    bookmarks[clean_name]["path"] = clean_path;
+    something_was_changed = True;
+
+    print("Bookmark updated:\n  ({0}) - ({1})".format(clean_name, clean_path));
 
 ##
 ## Add
