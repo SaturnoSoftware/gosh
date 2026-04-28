@@ -22,9 +22,9 @@
   noisy in shell workflows.
 - Why this matters now: the product already exists, but it sits outside the Saturno
   build/test/release standard and needs modernization.
-- What is painful today: install/release behavior is still legacy-shaped, wrapper-focused
-  regression coverage is still shallow, and the repo still needs a clearer enforceable
-  quality posture.
+- What is painful today: wrapper-focused regression coverage is still shallow, the repo
+  still needs a clearer long-term release/deploy posture, and modernization work must
+  keep the small-tool UX simple.
 - Why existing alternatives are not enough: shell aliases and ad-hoc scripts do not
   provide the same bookmark-oriented workflow or cross-shell wrapper behavior.
 

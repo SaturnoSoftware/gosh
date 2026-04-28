@@ -28,6 +28,7 @@
 import argparse
 import os;
 import os.path;
+import shutil;
 import sys;
 import getopt;
 import pdb;
@@ -44,8 +45,12 @@ PROGRAM_VERSION   = "5.0.0";
 PROGRAM_COPYRIGHT = "2015 - 2025";
 ##------------------------------------------------------------------------------
 ## Location of the paths file.
-BOOKMARKS_FILE_DIR  = os.path.expanduser("~/.mateusdigital/config/gosh");
-BOOKMARKS_FILE_PATH = os.path.join(BOOKMARKS_FILE_DIR, "gosh-paths.txt");
+SATURNO_HOME_DIR          = os.path.expanduser("~/.saturnosoftware/gosh");
+BOOKMARKS_CONFIG_DIR      = os.path.join(SATURNO_HOME_DIR, "config");
+BOOKMARKS_DATA_DIR        = os.path.join(SATURNO_HOME_DIR, "data");
+BOOKMARKS_FILE_PATH       = os.path.join(BOOKMARKS_DATA_DIR, "gosh-paths.txt");
+LEGACY_BOOKMARKS_FILE_DIR = os.path.expanduser("~/.mateusdigital/config/gosh");
+LEGACY_BOOKMARKS_FILE_PATH = os.path.join(LEGACY_BOOKMARKS_FILE_DIR, "gosh-paths.txt");
 ##------------------------------------------------------------------------------
 ## Some chars that are important to gosh.
 ## This char is used to pass the values back to gosh shell script.
@@ -75,6 +80,20 @@ def canonize_path(path):
     path = path.lstrip().rstrip();
     path = os.path.normpath(os.path.normcase(os.path.abspath(os.path.expanduser(path))));
     return path.replace("\\", "/");
+
+##------------------------------------------------------------------------------
+def ensure_bookmarks_storage():
+    os.makedirs(BOOKMARKS_CONFIG_DIR, exist_ok=True);
+    os.makedirs(BOOKMARKS_DATA_DIR, exist_ok=True);
+
+    if(os.path.isfile(BOOKMARKS_FILE_PATH)):
+        return;
+
+    if(os.path.isfile(LEGACY_BOOKMARKS_FILE_PATH)):
+        shutil.move(LEGACY_BOOKMARKS_FILE_PATH, BOOKMARKS_FILE_PATH);
+        return;
+
+    open(BOOKMARKS_FILE_PATH, "w").close(); ## @leak: don't care...
 
 
 ##----------------------------------------------------------------------------##
@@ -181,10 +200,7 @@ something_was_changed = False;
 
 ##
 ## This will ensure that the bookmarks file exists.
-if(not os.path.isdir(BOOKMARKS_FILE_DIR)):
-    os.makedirs(BOOKMARKS_FILE_DIR);
-if(not os.path.isfile(BOOKMARKS_FILE_PATH)):
-    open(BOOKMARKS_FILE_PATH, "w").close(); ## @leak: don't care...
+ensure_bookmarks_storage();
 
 
 ##

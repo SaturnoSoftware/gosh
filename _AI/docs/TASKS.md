@@ -2,6 +2,51 @@
 
 ## Current Task
 
+### T-013: Restore green verification after the Saturno path migration
+
+- Mode: Shared
+- Owner: Assistant
+- Status: Done
+- Goal: make the post-migration verification path pass again across Linux and PowerShell
+  environments.
+- Why now: the Saturno machine-local path migration was correct, but live verification still
+  failed because the PowerShell wrapper assumed `python` existed and the Bash installer still
+  carried CRLF line endings in packaged releases.
+- Scope:
+  - make `gosh.ps1` resolve `python`, `python3`, or `py -3`
+  - normalize `install.sh` so packaged Bash install runs cleanly on Unix-like systems
+  - keep regression coverage aligned with the Saturno install layout
+- Verification:
+  - `python3 -m unittest discover -s tests -v`
+  - `pwsh -File Scripts/build.ps1 -ProjectRoot . -BuildNumber 0`
+  - `pwsh -File Scripts/package.ps1 -ProjectRoot . -BuildNumber 0`
+- Result:
+  - the release verification path is green again after the Saturno install-layout migration,
+    including PowerShell wrapper directory changes and packaged Bash install flow
+
+### T-012: Align machine-local install paths to the Saturno layout
+
+- Mode: Shared
+- Owner: Assistant
+- Status: Done
+- Goal: replace the old `~/.mateusdigital/...` install/storage paths with the Saturno
+  machine-local layout under `~/.saturnosoftware/gosh/`.
+- Why now: the repo's build/package shape had been modernized, but the installed runtime
+  still used the pre-Saturno machine-local path convention.
+- Scope:
+  - update `install.sh` and `install.ps1` to deploy under `~/.saturnosoftware/gosh/`
+  - split the installed app tree into `bin/`, `config/`, and `data/`
+  - move bookmark persistence to `~/.saturnosoftware/gosh/data/gosh-paths.txt`
+  - migrate the legacy bookmarks file on first run
+  - update tests and docs to reflect the new contract
+- Verification:
+  - `python3 -m unittest discover -s tests -v`
+  - `pwsh -File Scripts/build.ps1 -ProjectRoot . -BuildNumber 0`
+  - `pwsh -File Scripts/package.ps1 -ProjectRoot . -BuildNumber 0`
+- Result:
+  - `gosh` now installs under `~/.saturnosoftware/gosh/` with app-local `bin/`,
+    `config/`, and `data/` directories, and the legacy bookmarks file migrates forward
+
 ### T-011: Define code-style and script-quality posture
 
 - Mode: Shared
@@ -166,3 +211,5 @@
 | T-008 | Expand CLI regression coverage | AI owns | Done | Covers invalid paths, fuzzy lookup, update flow, and wrapper directory mutation |
 | T-010 | Modernize install/build/release structure | AI owns | Done | `App/` payload now stages in `__BUILD/` and `__DIST/`, and install scripts consume it |
 | T-011 | Define code-style and script-quality posture | Shared | Done | `CODESTYLE.md` now ties Python/Bash/PowerShell changes to explicit quality gates and verification commands |
+| T-012 | Align machine-local install paths to the Saturno layout | Shared | Done | `gosh` now installs and stores bookmarks under `~/.saturnosoftware/gosh/` with app-local `bin/`, `config/`, and `data/` directories |
+| T-013 | Restore green verification after the Saturno path migration | Shared | Done | PowerShell wrapper now resolves Python portably and packaged Bash install runs with normalized LF line endings |

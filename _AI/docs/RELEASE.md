@@ -8,6 +8,7 @@
 - Install/update path:
   - `install.sh`
   - `install.ps1`
+  - installed machine-local root: `~/.saturnosoftware/gosh/`
 - License: GPLv3
 - Pricing model: free software
 - Support stance: maintainer-driven
@@ -27,6 +28,12 @@
   - `install.sh`
   - `install.ps1`
   - `package.json`
+- the install scripts now deploy into the Saturno machine-local app tree:
+  - `~/.saturnosoftware/gosh/bin`
+  - `~/.saturnosoftware/gosh/config`
+  - `~/.saturnosoftware/gosh/data`
+- legacy bookmarks under `~/.mateusdigital/config/gosh/gosh-paths.txt` are migrated
+  into `~/.saturnosoftware/gosh/data/gosh-paths.txt` on first run
 - the repo still has no approved deploy / set-current / release entrypoint
 - install scripts remain the practical user-facing release path today, but they now
   consume the packaged layout instead of depending only on the loose repo tree

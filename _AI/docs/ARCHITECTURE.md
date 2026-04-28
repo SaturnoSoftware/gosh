@@ -17,10 +17,16 @@
   - `install.ps1`
   - `Scripts/build.ps1`
   - `Scripts/package.ps1`
-- Deployment target: user shell environment after installation
+- Deployment target: user shell environment after installation under
+  `~/.saturnosoftware/gosh/`
 - Release payload shape: package-ready `App/` directory plus root install scripts inside
   `__BUILD/<release-name>/` and `__DIST/<release-name>/`
-- Persistence/storage: bookmarks file under `~/.mateusdigital/config/gosh/gosh-paths.txt`
+- Persistence/storage: bookmarks file under
+  `~/.saturnosoftware/gosh/data/gosh-paths.txt`
+- Machine-local install layout:
+  - `~/.saturnosoftware/gosh/bin`
+  - `~/.saturnosoftware/gosh/config`
+  - `~/.saturnosoftware/gosh/data`
 - Logging/debug posture: plain console output only
 - Test runner: Python `unittest`
 - CI/CD platform: GitHub Actions (`.github/workflows/test.yml`)

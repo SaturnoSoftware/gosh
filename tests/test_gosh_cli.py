@@ -30,10 +30,16 @@ class GoshCliTests(unittest.TestCase):
         )
 
     def read_bookmarks_file(self, home_dir: Path) -> str:
-        bookmarks_path = home_dir / ".mateusdigital" / "config" / "gosh" / "gosh-paths.txt"
+        bookmarks_path = home_dir / ".saturnosoftware" / "gosh" / "data" / "gosh-paths.txt"
         if not bookmarks_path.exists():
             return ""
         return bookmarks_path.read_text(encoding="utf-8")
+
+    def write_legacy_bookmarks_file(self, home_dir: Path, content: str) -> Path:
+        bookmarks_path = home_dir / ".mateusdigital" / "config" / "gosh" / "gosh-paths.txt"
+        bookmarks_path.parent.mkdir(parents=True, exist_ok=True)
+        bookmarks_path.write_text(content, encoding="utf-8")
+        return bookmarks_path
 
     def run_powershell_wrapper(self, home_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
@@ -150,6 +156,22 @@ class GoshCliTests(unittest.TestCase):
             self.assertTrue(os.path.samefile(print_result.stdout.strip(), updated_path.resolve()))
             stored_path = bookmarks_file.strip().split(";")[1]
             self.assertTrue(os.path.samefile(stored_path, updated_path.resolve()))
+
+    def test_legacy_bookmarks_file_is_migrated_to_saturno_data_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as target_dir:
+            home_path = Path(temp_home)
+            target_path = Path(target_dir).resolve().as_posix()
+            legacy_path = self.write_legacy_bookmarks_file(home_path, f"legacy;{target_path};0\n")
+
+            list_result = self.run_gosh(home_path, "--list")
+            bookmarks_file = home_path / ".saturnosoftware" / "gosh" / "data" / "gosh-paths.txt"
+            migrated_content = bookmarks_file.read_text(encoding="utf-8")
+            legacy_exists = legacy_path.exists()
+
+        self.assertEqual(list_result.returncode, 0)
+        self.assertIn("legacy", list_result.stdout)
+        self.assertFalse(legacy_exists)
+        self.assertEqual(migrated_content, f"legacy;{target_path};0\n")
 
     @unittest.skipUnless(shutil.which("pwsh"), "PowerShell is required for wrapper tests")
     def test_powershell_wrapper_changes_directory(self) -> None:

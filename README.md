@@ -78,6 +78,22 @@ cd gosh
 The same install scripts also work from a packaged release root under
 `__DIST/<release-name>/`.
 
+The Saturno machine-local install root is:
+
+```text
+~/.saturnosoftware/gosh/
+  bin/
+    gosh2.py
+    gosh.sh
+    gosh.ps1
+  config/
+  data/
+    gosh-paths.txt
+```
+
+If you already have bookmarks stored under the legacy `~/.mateusdigital/...` tree,
+`gosh` migrates that bookmarks file into `~/.saturnosoftware/gosh/data/` on first run.
+
 ## Build And Package
 
 `gosh` is being aligned to the Saturno.Software shared build contract.

@@ -27,13 +27,15 @@ $SCRIPT_FULLPATH = $MyInvocation.MyCommand.Path;
 $SCRIPT_DIR      = (Split-Path "$SCRIPT_FULLPATH" -Parent);
 $GOSH_EXE        = (Join-Path $SCRIPT_DIR "gosh2.py");
 $PYTHON_EXE      = "python";
+$PYTHON_ARGS     = @();
 
-if($IsMacOS) {
-    $python_path  = (which python);
-    if($python_path) {
-        $PYTHON_EXE = "$python_path";
-    } else {
-        $PYTHON_EXE = "python3"
+if (-not (Get-Command "python" -ErrorAction SilentlyContinue)) {
+    if (Get-Command "python3" -ErrorAction SilentlyContinue) {
+        $PYTHON_EXE = "python3";
+    }
+    elseif (Get-Command "py" -ErrorAction SilentlyContinue) {
+        $PYTHON_EXE = "py";
+        $PYTHON_ARGS = @("-3");
     }
 }
 
@@ -42,7 +44,7 @@ if($IsMacOS) {
 ##----------------------------------------------------------------------------##
 ## No args, just list the bookmarks.
 if($args.Count -eq 0) {
-    & $PYTHON_EXE $GOSH_EXE --help;
+    & $PYTHON_EXE @PYTHON_ARGS $GOSH_EXE --help;
     return;
 }
 
@@ -62,11 +64,11 @@ $has_long_flags  = $cmd_line.Contains(" --");
 
 ## Making an action...
 if(($has_short_flags) -or ($has_long_flags)) {
-    & $PYTHON_EXE $GOSH_EXE $args;
+    & $PYTHON_EXE @PYTHON_ARGS $GOSH_EXE $args;
 }
 ## Changing directory...
 else {
-    $path = (& $PYTHON_EXE $GOSH_EXE $args);
+    $path = (& $PYTHON_EXE @PYTHON_ARGS $GOSH_EXE $args);
     if (($null -ne $path) -and (Test-Path -PathType Container $path)) {
         Set-Location $path;
     } else {

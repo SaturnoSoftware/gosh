@@ -34,6 +34,7 @@
 - packaged PowerShell install flow
 - packaged Bash install flow on Unix-like environments
 - wrapper directory mutation in PowerShell and Bash where those shells are available
+- legacy bookmark migration into the Saturno data root
 
 ## Next Coverage Targets
 

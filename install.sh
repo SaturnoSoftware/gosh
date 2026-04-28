@@ -8,9 +8,10 @@ SCRIPT_DIR="$(dirname "$SCRIPT_FULLPATH")";
 HOME_DIR="${HOME:-$USERPROFILE}";
 
 PROGRAM_NAME="gosh";
-DIRECTORY_NAME="${PROGRAM_NAME}_";
-PROGRAM_INSTALL_ROOT_PATH="${HOME_DIR}/.mateusdigital/bin";
-PROGRAM_INSTALL_SUB_PATH="${PROGRAM_INSTALL_ROOT_PATH}/${DIRECTORY_NAME}";
+PROGRAM_ROOT_PATH="${HOME_DIR}/.saturnosoftware/${PROGRAM_NAME}";
+PROGRAM_BIN_PATH="${PROGRAM_ROOT_PATH}/bin";
+PROGRAM_CONFIG_PATH="${PROGRAM_ROOT_PATH}/config";
+PROGRAM_DATA_PATH="${PROGRAM_ROOT_PATH}/data";
 
 if [ -d "${SCRIPT_DIR}/App" ]; then
     PROGRAM_SOURCE_PATH="${SCRIPT_DIR}/App";
@@ -26,21 +27,26 @@ fi
 ##----------------------------------------------------------------------------##
 echo "Installing ...";
 
-## Create the install directory if it doesn't exist
-if [ ! -d "$PROGRAM_INSTALL_SUB_PATH" ]; then
-    echo "Creating directory at:";
-    echo "    $PROGRAM_INSTALL_SUB_PATH";
-    mkdir -p "$PROGRAM_INSTALL_SUB_PATH";
-fi
+## Create the install directories if they don't exist
+for directory in "$PROGRAM_ROOT_PATH" "$PROGRAM_BIN_PATH" "$PROGRAM_CONFIG_PATH" "$PROGRAM_DATA_PATH"; do
+    if [ ! -d "$directory" ]; then
+        echo "Creating directory at:";
+        echo "    $directory";
+        mkdir -p "$directory";
+    fi
+done
 
 ## Copy files
-cp -f "${PROGRAM_SOURCE_PATH}/gosh2.py" "${PROGRAM_INSTALL_SUB_PATH}/gosh2.py";
-cp -f "${PROGRAM_SOURCE_PATH}/gosh.sh" "${PROGRAM_INSTALL_ROOT_PATH}/gosh.sh";
+cp -f "${PROGRAM_SOURCE_PATH}/"* "${PROGRAM_BIN_PATH}/";
 
 echo "$PROGRAM_NAME was installed at:";
-echo "    $PROGRAM_INSTALL_ROOT_PATH";
+echo "    $PROGRAM_ROOT_PATH";
+echo "Binary directory:";
+echo "    $PROGRAM_BIN_PATH";
+echo "Data directory:";
+echo "    $PROGRAM_DATA_PATH";
 echo "You **need** to source it to use, for example:";
-echo "    source \"$PROGRAM_INSTALL_ROOT_PATH/gosh.sh\"";
+echo "    source \"$PROGRAM_BIN_PATH/gosh.sh\"";
 
 echo "Done... ;D";
 echo "";

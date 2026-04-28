@@ -96,10 +96,12 @@ class GoshReleaseLayoutTests(unittest.TestCase):
                 check=False,
             )
 
-            install_root = Path(temp_home) / ".mateusdigital" / "bin"
+            install_root = Path(temp_home) / ".saturnosoftware" / "gosh"
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertTrue((install_root / "gosh.ps1").is_file())
-            self.assertTrue((install_root / "gosh_" / "gosh2.py").is_file())
+            self.assertTrue((install_root / "bin" / "gosh.ps1").is_file())
+            self.assertTrue((install_root / "bin" / "gosh2.py").is_file())
+            self.assertTrue((install_root / "config").is_dir())
+            self.assertTrue((install_root / "data").is_dir())
 
     @unittest.skipUnless(shutil.which("bash") and os.name != "nt", "bash install test requires Unix-like bash")
     def test_packaged_bash_install_uses_dist_layout(self) -> None:
@@ -119,10 +121,12 @@ class GoshReleaseLayoutTests(unittest.TestCase):
                 check=False,
             )
 
-            install_root = Path(temp_home) / ".mateusdigital" / "bin"
+            install_root = Path(temp_home) / ".saturnosoftware" / "gosh"
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertTrue((install_root / "gosh.sh").is_file())
-            self.assertTrue((install_root / "gosh_" / "gosh2.py").is_file())
+            self.assertTrue((install_root / "bin" / "gosh.sh").is_file())
+            self.assertTrue((install_root / "bin" / "gosh2.py").is_file())
+            self.assertTrue((install_root / "config").is_dir())
+            self.assertTrue((install_root / "data").is_dir())
 
 
 if __name__ == "__main__":
