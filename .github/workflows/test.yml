@@ -19,8 +19,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run CLI tests
-        run: python3 -m unittest discover -s tests -v
+      - name: Install coverage tool
+        run: pip install coverage
+
+      - name: Run CLI tests with coverage
+        run: coverage run -m unittest discover -s tests -v && coverage report --fail-under=80
 
       - name: Run Saturno build contract
         shell: pwsh
