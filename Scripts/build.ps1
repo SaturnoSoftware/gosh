@@ -1,11 +1,12 @@
 param(
-    [string]$ProjectRoot,
+    [string]$ProjectRoot = (Split-Path $PSScriptRoot -Parent),
     [string]$Preset = "Default",
     [ValidateSet("development", "production")][string]$Environment = "development",
     [ValidateSet("debug", "release")][string]$ExportMode = "release",
     [int]$BuildNumber
 )
 
+Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 function Get-GoshPackageJson {
