@@ -26,6 +26,7 @@
 ## Imports                                                                    ##
 ##----------------------------------------------------------------------------##
 import argparse
+import json
 import os;
 import os.path;
 import shutil;
@@ -42,10 +43,19 @@ from difflib import SequenceMatcher as SM;
 ##------------------------------------------------------------------------------
 PROGRAM_NAME      = "gosh";
 PROGRAM_VERSION   = "5.0.0";
+PROGRAM_BUILD     = 0;
 PROGRAM_COPYRIGHT = "2015 - 2025";
+PROGRAM_AUTHOR    = "mateus.digital";
+PROGRAM_EMAIL     = "hello@mateus.digital";
+PROGRAM_WEBSITE   = "http://mateus.digital";
+PROGRAM_LICENSE   = "GPLv3";
 ##------------------------------------------------------------------------------
 ## Location of the paths file.
-SATURNO_HOME_DIR          = os.path.expanduser("~/.saturnosoftware/gosh");
+REPO_ROOT                 = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."));
+PACKAGE_JSON_PATH         = os.path.join(REPO_ROOT, "package.json");
+SATURNO_PLATFORM_ROOT     = os.path.expanduser("~/.saturnosoftware");
+SATURNO_HOME_DIR          = os.path.join(SATURNO_PLATFORM_ROOT, "gosh");
+BOOKMARKS_BIN_DIR         = os.path.join(SATURNO_HOME_DIR, "bin");
 BOOKMARKS_CONFIG_DIR      = os.path.join(SATURNO_HOME_DIR, "config");
 BOOKMARKS_DATA_DIR        = os.path.join(SATURNO_HOME_DIR, "data");
 BOOKMARKS_FILE_PATH       = os.path.join(BOOKMARKS_DATA_DIR, "gosh-paths.txt");
@@ -96,30 +106,58 @@ def ensure_bookmarks_storage():
     open(BOOKMARKS_FILE_PATH, "w").close(); ## @leak: don't care...
 
 
-##----------------------------------------------------------------------------##
-## Print Functions                                                            ##
-##----------------------------------------------------------------------------##
 ##------------------------------------------------------------------------------
-def print_fatal(msg):
-    print("{0} {1}".format("[FATAL]", msg));
-    exit(1);
+def cli_path(path):
+    return canonize_path(path);
+
 
 ##------------------------------------------------------------------------------
-def print_help():
-    print("""Usage:
-  gosh                   (Same as gosh -l)
-  gosh <name>            (To change the directory)
-  gosh -h | -v           (Show help | version)
-  gosh -l | -L           (Show list of bookmarks)
-  gosh -p <name>         (Show path for bookmark)
-  gosh -e <path>         (Show bookmark for path)
-  gosh -a <name> <path>  (Add bookmark)
-  gosh -u <name> <path>  (Update bookmark path)
-  gosh -d <name>         (Delete the bookmark)
+def load_cli_info():
+    cli_info = {
+        "Name"    : PROGRAM_NAME,
+        "Version" : PROGRAM_VERSION,
+        "Build"   : PROGRAM_BUILD,
+        "Author"  : PROGRAM_AUTHOR,
+        "Email"   : PROGRAM_EMAIL,
+        "Website" : PROGRAM_WEBSITE,
+        "License" : PROGRAM_LICENSE,
+    };
+
+    if os.path.isfile(PACKAGE_JSON_PATH):
+        with open(PACKAGE_JSON_PATH, "r", encoding="utf-8") as package_file:
+            package = json.load(package_file);
+
+        if package.get("name"):
+            cli_info["Name"] = str(package["name"]);
+        if package.get("version"):
+            cli_info["Version"] = str(package["version"]);
+        if package.get("build") is not None:
+            cli_info["Build"] = int(package["build"]);
+        if package.get("license"):
+            cli_info["License"] = str(package["license"]);
+
+    return cli_info;
+
+
+##------------------------------------------------------------------------------
+def get_usage_text():
+    cli_info = load_cli_info();
+
+    return """Usage:
+  {name}                   (Same as {name} -l)
+  {name} <name>            (To change the directory)
+  {name} -h | -v | -Json   (Show help | version | JSON metadata)
+  {name} -l | -L           (Show list of bookmarks)
+  {name} -p <name>         (Show path for bookmark)
+  {name} -e <path>         (Show bookmark for path)
+  {name} -a <name> <path>  (Add bookmark)
+  {name} -u <name> <path>  (Update bookmark path)
+  {name} -d <name>         (Delete the bookmark)
 
 Options:
-  *-h --help     : Show this screen.
-  *-v --version  : Show app version and copyright.
+  *-h --help       : Show this screen.
+  *-v --version    : Show app version and copyright.
+  *-Json --json    : Print structured CLI metadata for help/version consumers.
 
   *-e --exists <path>  : Print the Bookmark for path.
   *-p --print  <name>  : Print the path of Bookmark.
@@ -136,25 +174,137 @@ Options:
 Notes:
   If <path> is blank the current directory is assumed.
 
-  Options marked with * are exclusive, i.e. the gosh will run that
+  Options marked with * are exclusive, i.e. the {name} will run that
   and exit after the operation.
-""");
+""".format(name=cli_info["Name"]);
+
+
+##------------------------------------------------------------------------------
+def get_version_text():
+    cli_info = load_cli_info();
+
+    return "\n".join([
+        "{program_name} - {program_version}-{program_build} - {author} <{email}>",
+        "Copyright (c) {program_copyright} - mateus.digital",
+        "This is a free software ({license_name}) - Share/Hack it",
+        "Check {website} for more :)"
+    ]).format(
+        program_name=cli_info["Name"],
+        program_version=cli_info["Version"],
+        program_build=cli_info["Build"],
+        author=cli_info["Author"],
+        email=cli_info["Email"],
+        program_copyright=PROGRAM_COPYRIGHT,
+        license_name=cli_info["License"],
+        website=cli_info["Website"]
+    );
+
+
+##------------------------------------------------------------------------------
+def get_cli_commands():
+    return [
+        { "Name": "jump", "Description": "Change the shell directory to the selected bookmark", "SupportsJsonOutput": False },
+        { "Name": "list", "Description": "List bookmark names", "SupportsJsonOutput": False },
+        { "Name": "list-long", "Description": "List bookmark names and paths", "SupportsJsonOutput": False },
+        { "Name": "print", "Description": "Print the resolved path for one bookmark", "SupportsJsonOutput": False },
+        { "Name": "exists", "Description": "Print the bookmark that matches one path", "SupportsJsonOutput": False },
+        { "Name": "add", "Description": "Add a bookmark", "SupportsJsonOutput": False },
+        { "Name": "update", "Description": "Update one bookmark path", "SupportsJsonOutput": False },
+        { "Name": "delete", "Description": "Delete one bookmark", "SupportsJsonOutput": False },
+        { "Name": "edit", "Description": "Open the bookmarks file in the default editor", "SupportsJsonOutput": False },
+    ];
+
+
+##------------------------------------------------------------------------------
+def get_cli_metadata():
+    cli_info = load_cli_info();
+    usage_text = get_usage_text();
+    version_text = get_version_text();
+
+    return {
+        "Schema"      : "saturno-cli-metadata/v1",
+        "Name"        : cli_info["Name"],
+        "Summary"     : "Saturno directory bookmark CLI with Python core and shell wrappers.",
+        "Version"     : cli_info["Version"],
+        "Build"       : cli_info["Build"],
+        "Author"      : cli_info["Author"],
+        "Email"       : cli_info["Email"],
+        "Website"     : cli_info["Website"],
+        "License"     : cli_info["License"],
+        "UsageText"   : usage_text,
+        "VersionText" : version_text,
+        "Texts"       : {
+            "Usage"   : usage_text,
+            "Version" : version_text,
+        },
+        "OutputModes" : ["text", "json"],
+        "Commands"    : get_cli_commands(),
+        "Paths"       : {
+            "PlatformRoot" : cli_path(SATURNO_PLATFORM_ROOT),
+            "InstallRoot"  : cli_path(SATURNO_HOME_DIR),
+            "BinDir"       : cli_path(BOOKMARKS_BIN_DIR),
+            "ConfigRoot"   : cli_path(BOOKMARKS_CONFIG_DIR),
+            "DataRoot"     : cli_path(BOOKMARKS_DATA_DIR),
+            "DataFile"     : cli_path(BOOKMARKS_FILE_PATH),
+        },
+        "Supports"    : {
+            "JsonMetadata" : True,
+            "JsonCommands" : [],
+            "JsonErrors"   : True,
+            "ChangesDirectory" : True,
+        }
+    };
+
+
+##------------------------------------------------------------------------------
+def print_json_metadata():
+    print(json.dumps(get_cli_metadata(), indent=2));
+
+
+##------------------------------------------------------------------------------
+def print_json_error(code, message, command=None):
+    payload = {
+        "Schema"  : "saturno-cli-error/v1",
+        "Tool"    : load_cli_info()["Name"],
+        "Command" : command,
+        "Code"    : code,
+        "Message" : message,
+    };
+
+    print(json.dumps(payload), file=sys.stderr);
+    exit(1);
+
+
+##------------------------------------------------------------------------------
+def has_runtime_action(parsed_args):
+    return (
+        parsed_args.exists is not None
+        or parsed_args.print is not None
+        or parsed_args.list
+        or parsed_args.list_long
+        or parsed_args.add is not None
+        or parsed_args.delete is not None
+        or parsed_args.update is not None
+        or parsed_args.edit_paths
+        or len(parsed_args.values) != 0
+    );
+
+
+##----------------------------------------------------------------------------##
+## Print Functions                                                            ##
+##----------------------------------------------------------------------------##
+##------------------------------------------------------------------------------
+def print_fatal(msg):
+    print("{0} {1}".format("[FATAL]", msg));
+    exit(1);
+
+##------------------------------------------------------------------------------
+def print_help():
+    print(get_usage_text());
 
 ##------------------------------------------------------------------------------
 def print_version():
-    msg = "\n".join([
-        "{program_name} - {program_version} - mateus.digital <hello@mateus.digital>",
-        "Copyright (c) {program_copyright} - mateus.digital",
-        "This is a free software (GPLv3) - Share/Hack it",
-        "Check http://mateus.digital for more :)"]);
-
-    msg = msg.format(
-        program_name=PROGRAM_NAME,
-        program_version=PROGRAM_VERSION,
-        program_copyright=PROGRAM_COPYRIGHT
-    );
-
-    print(msg);
+    print(get_version_text());
 
 
 
@@ -167,6 +317,7 @@ parser = argparse.ArgumentParser(add_help=False);
 
 parser.add_argument("-h", "--help"   ,       dest=None       ,            action="store_true");
 parser.add_argument("-v", "--version",       dest=None       ,            action="store_true");
+parser.add_argument("-Json", "--json",       dest="json"     ,            action="store_true");
 parser.add_argument("-e", "--exists" ,       dest="exists"   , nargs="*", action="store");
 parser.add_argument("-p", "--print"  ,       dest="print"    , nargs=1  , action="store");
 parser.add_argument("-l", "--list"   ,       dest=None       ,            action="store_true");
@@ -181,7 +332,13 @@ args = parser.parse_args();
 
 ##
 ## Help and Version doesn't need anything...
-if(args.help):
+if(args.json):
+    if(args.help or args.version or not has_runtime_action(args)):
+        print_json_metadata();
+        exit(0);
+
+    print_json_error("cli.json-metadata-only", "--json is currently only supported for root help/version metadata.");
+elif(args.help):
     print_help();
     exit(0);
 elif(args.version):

@@ -1,4 +1,5 @@
 import os
+import json
 import shlex
 import shutil
 import subprocess
@@ -80,6 +81,38 @@ class GoshCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("Usage:", result.stdout)
         self.assertIn("gosh -a <name> <path>", result.stdout)
+        self.assertIn("-Json", result.stdout)
+
+    def test_json_metadata_prints_shared_cli_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home:
+            result = self.run_gosh(Path(temp_home), "--json")
+
+        self.assertEqual(result.returncode, 0)
+        metadata = json.loads(result.stdout)
+        self.assertEqual(metadata["Schema"], "saturno-cli-metadata/v1")
+        self.assertEqual(metadata["Name"], "gosh")
+        self.assertIn("json", metadata["OutputModes"])
+        self.assertTrue(metadata["Supports"]["JsonMetadata"])
+        self.assertIn("jump", [command["Name"] for command in metadata["Commands"]])
+        self.assertTrue(metadata["Paths"]["DataFile"].endswith("gosh-paths.txt"))
+
+    def test_json_metadata_alias_is_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home:
+            result = self.run_gosh(Path(temp_home), "-Json")
+
+        self.assertEqual(result.returncode, 0)
+        metadata = json.loads(result.stdout)
+        self.assertEqual(metadata["Schema"], "saturno-cli-metadata/v1")
+
+    def test_json_mode_returns_error_envelope_for_runtime_actions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_home:
+            result = self.run_gosh(Path(temp_home), "--json", "--list")
+
+        self.assertEqual(result.returncode, 1)
+        error_payload = json.loads(result.stderr)
+        self.assertEqual(error_payload["Schema"], "saturno-cli-error/v1")
+        self.assertEqual(error_payload["Code"], "cli.json-metadata-only")
+        self.assertIn("root help/version metadata", error_payload["Message"])
 
     def test_add_and_print_bookmark(self) -> None:
         with tempfile.TemporaryDirectory() as temp_home, tempfile.TemporaryDirectory() as target_dir:

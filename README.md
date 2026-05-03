@@ -19,7 +19,7 @@
 <!-- ----------------------------------------------------------------------- -->
 ## Description:
 
-`gosh` is a simple Bash bookmark utility that lets you jump between frequently used directories quickly.  
+`gosh` is a simple Bash bookmark utility that lets you jump between frequently used directories quickly.
 It reduces the stress of traversing long, nested paths or places that you reference often.
 
 It works as a lightweight CLI companion powered by python, with hooks in bash and powershell..
@@ -34,7 +34,7 @@ As usual, you are very welcomed to share and hack it, and I would love to hear f
 Usage:
   gosh                   (Same as gosh -l)
   gosh <name>            (To change the directory)
-  gosh -h | -v           (Show help | version)
+  gosh -h | -v | -Json   (Show help | version | JSON metadata)
   gosh -l | -L           (Show list of bookmarks)
   gosh -p <name>         (Show path for bookmark)
   gosh -e <path>         (Show bookmark for path)
@@ -45,6 +45,7 @@ Usage:
 Options:
   *-h --help     : Show this screen.
   *-v --version  : Show app version and copyright.
+  *-Json --json  : Print structured CLI metadata for help/version consumers.
 
   *-e --exists <path>  : Print the Bookmark for path.
   *-p --print  <name>  : Print the path of Bookmark.
@@ -62,6 +63,21 @@ Notes:
   Options marked with * are exclusive, i.e. gosh will run that
   and exit after the operation.
 ```
+
+---
+
+## JSON metadata
+
+`gosh -Json` / `gosh --json` prints the shared Saturno CLI metadata contract:
+
+- `Schema = saturno-cli-metadata/v1`
+- `Name`, `Summary`, `Version`, `Build`
+- `UsageText`, `VersionText`, `Commands`
+- `OutputModes`, `Paths`, `Supports`
+
+`gosh` remains a text-first bookmark tool for its runtime actions, so `--json` is limited to root
+help/version discovery and returns a `saturno-cli-error/v1` envelope if it is combined with a
+runtime action like `--list` or bookmark navigation.
 
 ---
 
