@@ -1,0 +1,34 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Run Gosh release verification
+        shell: pwsh
+        run: |
+          pwsh -File ./Scripts/test.ps1 -ProjectRoot $PWD
+          pwsh -File ./Scripts/build.ps1 -ProjectRoot $PWD -BuildNumber $env:GITHUB_RUN_NUMBER
+          pwsh -File ./Scripts/package.ps1 -ProjectRoot $PWD -BuildNumber $env:GITHUB_RUN_NUMBER
+
+      - name: Upload packaged artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: gosh-${{ github.ref_name || github.run_number }}
+          path: __DIST/**
+          if-no-files-found: error

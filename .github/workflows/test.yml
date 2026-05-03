@@ -19,11 +19,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install coverage tool
-        run: pip install coverage
-
-      - name: Run CLI tests with coverage
-        run: coverage run -m unittest discover -s tests -v && coverage report --fail-under=80
+      - name: Run Saturno test wrapper
+        shell: pwsh
+        run: |
+          pwsh -NoLogo -NoProfile -File ./Scripts/test.ps1 -ProjectRoot $PWD
 
       - name: Run Saturno build contract
         shell: pwsh
