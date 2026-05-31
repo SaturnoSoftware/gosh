@@ -65,12 +65,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.SATURNO_CI_SUBMODULES_TOKEN }}
+          submodules: recursive
+          token: ${{ secrets.SATURNO_CI_SUBMODULES_TOKEN || github.token }}
 
       - name: Setup project
         uses: ./.github/actions/setup
         with:
-          submodules-token: ${{ secrets.SATURNO_CI_SUBMODULES_TOKEN }}
+          submodules-token: ${{ secrets.SATURNO_CI_SUBMODULES_TOKEN || github.token }}
 
       - name: Run tests
         shell: pwsh
