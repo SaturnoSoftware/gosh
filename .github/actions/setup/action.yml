@@ -1,0 +1,59 @@
+name: "Project Setup"
+description: "Configure Saturno.CICD and install the project runtimes."
+
+inputs:
+  submodules-token:
+    description: "GitHub token for submodule access"
+    required: true
+  node-version:
+    description: "Node.js version to install"
+    required: false
+    default: "24"
+  python-version:
+    description: "Python version to install"
+    required: false
+    default: "3.12"
+
+runs:
+  using: composite
+  steps:
+    - name: Configure submodule access
+      shell: pwsh
+      env:
+        SATURNO_CI_SUBMODULES_TOKEN: ${{ inputs.submodules-token }}
+      run: |
+        $ErrorActionPreference = "Stop"
+        Set-Location -LiteralPath $env:GITHUB_WORKSPACE
+
+        function Invoke-Git {
+          & git @args
+          if ($LASTEXITCODE -ne 0) {
+            throw "git $($args -join ' ') failed with exit code $LASTEXITCODE."
+          }
+        }
+
+        $token = $env:SATURNO_CI_SUBMODULES_TOKEN.Trim()
+        if ([string]::IsNullOrWhiteSpace($token)) {
+          throw "Missing submodule token."
+        }
+
+        Write-Host "::group::Configuring submodule access"
+        Invoke-Git config --global ("url.https://x-access-token:{0}@github.com/.insteadOf" -f $token) "git@github.com:"
+        Invoke-Git config --global ("url.https://x-access-token:{0}@github.com/.insteadOf" -f $token) "https://github.com/"
+        Invoke-Git submodule sync --recursive
+        Invoke-Git submodule update --init --recursive
+        Write-Host "::endgroup::"
+
+        Write-Host "::group::Submodule status"
+        Invoke-Git submodule status --recursive
+        Write-Host "::endgroup::"
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}

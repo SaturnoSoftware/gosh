@@ -1,0 +1,19 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/workflows/quality-gate.yml
+    with:
+      build-number: "0"
+      release-name: "gosh-test-0"
+      artifact-name: "Saturno.Gosh-test"
+      upload-artifact: true
+      artifact-if-no-files-found: error

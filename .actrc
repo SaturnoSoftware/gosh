@@ -1,0 +1,7 @@
+--pull=false
+--concurrent-jobs=1
+--container-architecture=linux/amd64
+--artifact-server-path=.act/artifacts
+--artifact-server-port=0
+--env=CI=true
+-P ubuntu-latest=catthehacker/ubuntu:act-latest

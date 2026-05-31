@@ -1,0 +1,27 @@
+{
+  "name": "gosh",
+  "version": "7.0.0",
+  "build": 29,
+  "description": "Cross-shell directory bookmark utility powered by Python with Bash and PowerShell wrappers.",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "build": "pwsh -NoLogo -NoProfile -File ./Scripts/build.ps1 -ProjectRoot . -BuildOutputDir __BUILD/_staging",
+    "test": "pwsh -NoLogo -NoProfile -File ./Scripts/test.ps1 -ProjectRoot ."
+  },
+  "saturno": {
+    "cicd": {
+      "artifactPrefix": "Saturno.Gosh",
+      "build": {
+        "stagingRoot": "__BUILD/_staging",
+        "expectedFiles": [
+          "App/gosh2.py",
+          "App/gosh.sh",
+          "App/gosh.ps1",
+          "package.json",
+          "install.sh",
+          "install.ps1"
+        ]
+      }
+    }
+  }
+}
