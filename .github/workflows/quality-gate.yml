@@ -27,6 +27,9 @@ on:
         required: false
         type: string
         default: warn
+    secrets:
+      SATURNO_CI_SUBMODULES_TOKEN:
+        required: false
   workflow_dispatch:
     inputs:
       build-number:

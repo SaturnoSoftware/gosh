@@ -17,3 +17,5 @@ jobs:
       artifact-name: "Saturno.Gosh-test"
       upload-artifact: true
       artifact-if-no-files-found: error
+    secrets:
+      SATURNO_CI_SUBMODULES_TOKEN: ${{ secrets.SATURNO_CI_SUBMODULES_TOKEN }}
