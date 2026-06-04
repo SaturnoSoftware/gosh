@@ -1,7 +1,7 @@
 {
   "name": "gosh",
   "version": "7.0.2",
-  "build": 34,
+  "build": 35,
   "description": "Cross-shell directory bookmark utility powered by Python with Bash and PowerShell wrappers.",
   "license": "GPL-3.0-or-later",
   "scripts": {
